@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Author: Ben West, Maintainer: Scott Leibrand
+# Author: Ben West @bewest
+# Maintainer: Chris Oattes @cjo20
 
 # Written for decocare v0.0.17. Will need updating the the decocare json format changes.
 HISTORY=${1-glucosehistory.json}
-OUTPUT=${2-glucosehistory.ns.json}
+OUTPUT=${2-/dev/fd/1}
 #TZ=${3-$(date +%z)}
 
 cat $HISTORY | \
@@ -17,5 +18,3 @@ cat $HISTORY | \
   json -E "delete this._tell" \
   > $OUTPUT
 
-# requires API_SECRET and NIGHTSCOUT_HOST to be set in calling environment (i.e. in crontab)
-curl -s -X POST --data-binary @$OUTPUT -H "API-SECRET: $API_SECRET" -H "content-type: application/json" $NIGHTSCOUT_HOST/api/v1/entries.json >/dev/null && ( touch /tmp/openaps.online && echo "Uploaded $OUTPUT to $NIGHTSCOUT_HOST" ) || echo "Unable to upload to $NIGHTSCOUT_HOST"
