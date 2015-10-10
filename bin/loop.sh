@@ -205,6 +205,15 @@ execute() {
     tail requestedtemp.json
 
 
+    # make sure we're not using an old suggestion
+    rm requestedtemp*
+    # if we can't run suggest, it might be because our pumpsettings are missing or screwed up"
+    suggest || ( getpumpsettings && suggest ) || die "Can't calculate IOB or basal"
+    pebble
+    tail profile.json
+    tail iob.json
+    tail requestedtemp.json
+
     # don't act on stale glucose data
     findglucose && grep -q glucose glucose.json || ( bail "No recent glucose data"; return $? )
     # execute/enact the requested temp
